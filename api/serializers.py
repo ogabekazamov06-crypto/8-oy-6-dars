@@ -16,7 +16,6 @@ class CarBrandSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'country', 'cars']
 
 
-
 class BrandSerializerForCar(serializers.ModelSerializer):
     class Meta:
         model = CarBrand
@@ -29,7 +28,7 @@ class CarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Car
         fields = '__all__'
-        extra_kwargs = {'brand': {'write_only': True}} # Ma'lumot kiritganda faqat ID yuboriladi
+        extra_kwargs = {'brand': {'write_only': True}}
 
 
 class CarAdminSerializer(serializers.ModelSerializer):
@@ -47,3 +46,11 @@ class CommentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
         return super().create(validated_data)
+
+class CarOptimizedSerializer(serializers.ModelSerializer):
+    brend = BrandSerializerForCar(read_only=True, source='brand')
+    comments = CommentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Car
+        fields = ['id', 'model_name', 'price', 'brend', 'comments']
